@@ -1,7 +1,7 @@
-from main import main
+from main import check_version
 
 
 def test_check_packages_version(hello_world):
     print(hello_world)
 
-    main()
+    check_version()
