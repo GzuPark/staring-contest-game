@@ -9,6 +9,8 @@ import cv2
 import dlib
 import numpy as np
 
+from utils import face_detector
+
 
 def check_version():
     print("Check the packages version")
@@ -17,7 +19,17 @@ def check_version():
     print("{0: <5}: {1}".format('numpy', np.__version__))
 
 
-def webcam(cam_id):
+def play():
+    print("[INFO] Can play the game!")
+
+
+def check_blink():
+    pass
+
+
+def run(cam_id, model):
+    faces, landmarks = face_detector(model)
+
     cap = cv2.VideoCapture(cam_id)
 
     previous_time = 0
@@ -33,6 +45,12 @@ def webcam(cam_id):
 
         if ret is True:
             flipped_img = cv2.flip(img, 1)
+            face_rectangles = faces(flipped_img, 0)
+
+            if len(face_rectangles) == 2:
+                play()
+            else:
+                print("[Warning] Need only 2 players")
 
             # update time
             diff_time = current_time - previous_time
@@ -50,7 +68,8 @@ def webcam(cam_id):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--cam_id", type=int, default=0, help="Webcam ID.")
+    parser.add_argument("-m", "--model", type=str, default="shape_predictor_68_face_landmarks.dat", help="dlib detector model")
+    parser.add_argument("-c", "--cam_id", type=int, default=0, help="webcam ID")
 
     args = parser.parse_args()
 
@@ -61,7 +80,8 @@ def main():
     check_version()
 
     args = get_args()
-    webcam(args.cam_id)
+
+    run(args.cam_id, args.model)
 
 
 if __name__ == '__main__':
