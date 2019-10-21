@@ -154,6 +154,12 @@ def check_blink(landmarks, left_eye, right_eye):
 
 
 def run(args):
+    if args.test is True:
+        time.sleep(1)
+        return
+    else:
+        cap = cv2.VideoCapture(args.cam_id)
+
     faces, landmarks = face_detector(args.model)
     ot = ObjectTracker()
 
@@ -161,8 +167,6 @@ def run(args):
         'left_eye': list(range(36, 42, 1)),
         'right_eye': list(range(42, 48, 1)),
     }
-
-    cap = cv2.VideoCapture(args.cam_id)
 
     previous_time = 0
 
@@ -184,6 +188,7 @@ def run(args):
         if ret is True:
             flipped_img = cv2.flip(cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA), 1)
             face_rectangles = faces(flipped_img, 0)
+            # H, W, C = flipped_img.shape
 
             if len(face_rectangles) == 2:
                 rects = []
@@ -234,24 +239,24 @@ def run(args):
 
                 if (player1_blink is False) and (player2_blink is True):
                     winner = "Winner is the Player1"
-                    congrats = "[INFO] " + winner
-                    congrats_time = time.time()
-                    if announce != congrats:
-                        announce = congrats
-                        print(congrats)
+                    judge = "[INFO] " + winner
+                    judge_time = time.time()
+                    if announce != judge:
+                        announce = judge
+                        print(announce)
                 elif (player1_blink is True) and (player2_blink is False):
                     winner = "Winner is the Player2"
-                    congrats = "[INFO] " + winner
-                    congrats_time = time.time()
-                    if announce != congrats:
-                        announce = congrats
-                        print(congrats)
+                    judge = "[INFO] " + winner
+                    judge_time = time.time()
+                    if announce != judge:
+                        announce = judge
+                        print(announce)
             else:
-                congrats = "[Warning] Need only 2 players"
-                congrats_time = time.time() - 4
-                if announce != congrats:
-                    announce = congrats
-                    print(congrats)
+                judge = "[Warning] Need only 2 players"
+                judge_time = time.time() - 4
+                if announce != judge:
+                    announce = judge
+                    print(announce)
 
             # update time
             diff_time = current_time - previous_time
@@ -262,7 +267,7 @@ def run(args):
             cv2.putText(flipped_img, winner, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
             cv2.imshow("Staring Contests", flipped_img)
 
-            if time.time() - congrats_time > 3:
+            if time.time() - judge_time > 3:
                 winner = ""
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -276,6 +281,7 @@ def get_args():
     parser.add_argument("-m", "--model", type=str, default="shape_predictor_68_face_landmarks.dat", help="dlib detector model")
     parser.add_argument("-c", "--cam_id", type=int, default=0, help="webcam ID")
     parser.add_argument("-r", "--ratio", type=float, default=0.2, help="EAR threshold")
+    parser.add_argument("-t", "--test", action="store_true", help="to interrupt for testing")
 
     args = parser.parse_args()
 
