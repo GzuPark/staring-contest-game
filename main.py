@@ -179,6 +179,7 @@ def run(args):
     winner = ""
     game = OrderedDict()
     announce = ""
+    judge_time = 4
 
     while(cap.isOpened()):
         ret, img = cap.read()
