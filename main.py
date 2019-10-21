@@ -3,7 +3,6 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
-import math
 import os
 import time
 from collections import OrderedDict
@@ -75,7 +74,7 @@ class ObjectTracker():
 
                 used_rows.add(row)
                 used_cols.add(col)
-            
+
             unused_rows = set(range(dist.shape[0])).difference(used_rows)
             unused_cols = set(range(dist.shape[1])).difference(used_cols)
 
@@ -144,12 +143,12 @@ def shape_eye(landmarks, position):
 def check_blink(landmarks, left_eye, right_eye):
     shape_left_eye = shape_eye(landmarks, left_eye)
     shape_right_eye = shape_eye(landmarks, right_eye)
-    
+
     left_ear = eye_aspect_ratio(shape_left_eye)
     right_ear = eye_aspect_ratio(shape_right_eye)
 
     ear = (left_ear + right_ear) / 2.0
-    
+
     return ear
 
 
@@ -203,30 +202,30 @@ def run(args):
                     dummy_rect.append(_rect)
 
                 objects, rectangles = ot.update(rects)
-                
+
                 for obj_id, rect in rectangles.items():
                     cv2.rectangle(
-                        flipped_img, 
-                        (rect[0], rect[1]), 
-                        (rect[2], rect[3]), 
-                        (255 * obj_id, 255 * ((obj_id - 1) % 2), 0), 
+                        flipped_img,
+                        (rect[0], rect[1]),
+                        (rect[2], rect[3]),
+                        (255 * obj_id, 255 * ((obj_id - 1) % 2), 0),
                         1
                     )
                     for ear, _rect in zip(players_ear, dummy_rect):
                         if (_rect[0] == rect[0]) and (_rect[1] == rect[1]) and (_rect[2] == rect[2]) and (_rect[3] == rect[3]):
                             text = "Player {}".format(obj_id + 1)
                             cv2.putText(
-                                flipped_img, text, 
-                                (rect[0] - 10, rect[1] - 10), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 
-                                0.5, 
-                                (255 * obj_id, 255 * ((obj_id - 1) % 2), 0), 
+                                flipped_img, text,
+                                (rect[0] - 10, rect[1] - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                0.5,
+                                (255 * obj_id, 255 * ((obj_id - 1) % 2), 0),
                                 1
                             )
                             game[obj_id] = ear
                         else:
                             pass
-                
+
                 players = list(game.keys())
                 if game[players[0]] < args.ratio:
                     player1_blink = True
